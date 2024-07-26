@@ -1,14 +1,3 @@
-CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
-  username VARCHAR(50) NOT NULL,
-  first_name VARCHAR(50) NOT NULL,
-  last_name VARCHAR(50) NOT NULL,
-  email VARCHAR(100) NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE files (
   id SERIAL PRIMARY KEY,
   file_name VARCHAR(255) NOT NULL,
@@ -16,13 +5,27 @@ CREATE TABLE files (
   mime_type VARCHAR(50) NOT NULL, 
   key INTEGER NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  user_id INTEGER NOT NULL REFERENCES users(id)
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE Countries (
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(50) NOT NULL,
+  first_name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50) NOT NULL,
+  email VARCHAR(100) NOT NULL,
+  avatar_id INTEGER,
+  password VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (avatar_id) REFERENCES files(id)
+);
+
+CREATE TABLE countries (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
+    name VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE people (
@@ -33,7 +36,7 @@ CREATE TABLE people (
     birthday DATE,
     gender VARCHAR(10) NOT NULL,
     country_id INTEGER,
-    FOREIGN KEY (country_id) REFERENCES countries(id),
+    FOREIGN KEY(country_id) REFERENCES countries(id),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -50,12 +53,16 @@ CREATE TABLE movies (
   poster_id INTEGER,
   FOREIGN KEY (director_id) REFERENCES people(id),
   FOREIGN KEY (country_id) REFERENCES countries(id),
-  FOREIGN KEY (poster_id) REFERENCES files(id)
+  FOREIGN KEY (poster_id) REFERENCES files(id),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE genres (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
+    name VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE movies_genres (
@@ -63,7 +70,9 @@ CREATE TABLE movies_genres (
     genre_id INTEGER NOT NULL,
     PRIMARY KEY (movie_id, genre_id),
     FOREIGN KEY (movie_id) REFERENCES movies(id),
-    FOREIGN KEY (genre_id) REFERENCES genres(id)
+    FOREIGN KEY (genre_id) REFERENCES genres(id),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE characters (
@@ -80,7 +89,9 @@ CREATE TABLE movies_characters (
     character_id INTEGER NOT NULL,
     PRIMARY KEY (movie_id, character_id),
     FOREIGN KEY (movie_id) REFERENCES movies(id),
-    FOREIGN KEY (character_id) REFERENCES characters(id)
+    FOREIGN KEY (character_id) REFERENCES characters(id),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE characters_people (
@@ -88,7 +99,20 @@ CREATE TABLE characters_people (
     people_id INTEGER NOT NULL,
     PRIMARY KEY (character_id, people_id),
     FOREIGN KEY (people_id) REFERENCES people(id),
-    FOREIGN KEY (character_id) REFERENCES characters(id)
+    FOREIGN KEY (character_id) REFERENCES characters(id),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE photos (
+  id SERIAL PRIMARY KEY,
+  file_id INTEGER NOT NULL,
+  person_id INTEGER NOT NULL,
+  is_main BOOLEAN NOT NULL,
+  FOREIGN KEY (file_id) REFERENCES files(id),
+  FOREIGN KEY (person_id) REFERENCES people(id),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE favorite_movies (
@@ -96,5 +120,7 @@ CREATE TABLE favorite_movies (
     movie_id INTEGER NOT NULL,
     PRIMARY KEY (user_id, movie_id),
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (movie_id) REFERENCES movies(id)
+    FOREIGN KEY (movie_id) REFERENCES movies(id),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
